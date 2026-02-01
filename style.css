@@ -29,6 +29,7 @@ body {
 .hero h1 {
     font-size: 3rem;
     animation: fadeInUp 2s ease forwards;
+    animation: bounce 4s ease-in-out infinite;
 }
 
 .hero p {
@@ -52,18 +53,6 @@ body {
 .hero button:hover {
     transform: scale(1.1);
     box-shadow: 0 0 40px rgba(0,0,0,0.4);
-}
-
-/* Pokéball animée */
-.pokeball-hero {
-    position: absolute;
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
-    background: red;
-    top: 20%;
-    right: 10%;
-    animation: bounce 4s ease-in-out infinite;
 }
 
 /* ================= PORTFOLIO ================= */
