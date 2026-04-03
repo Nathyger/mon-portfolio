@@ -1,86 +1,752 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mon Portfolio</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nathan Monvoisin - Front-End Developer</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/ScrollToPlugin.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12/lib/typed.min.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Montserrat", sans-serif;
+        background: #0a0a0a;
+        color: #fff;
+        overflow-x: hidden;
+      }
+      .glass {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 15px;
+      }
+      .hero {
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+      }
+      .hero-content {
+        z-index: 2;
+        text-align: center;
+        animation: fadeIn 2s ease-in;
+      }
+      .hero h1 {
+        font-size: 4rem;
+        background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      .hero p {
+        font-size: 1.5rem;
+        margin: 20px 0;
+      }
+      canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+      }
+      .section {
+        padding: 100px 20px;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .skills {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 20px;
+      }
+      .skill-item {
+        padding: 30px;
+        text-align: center;
+        transition: transform 0.3s;
+      }
+      .skill-item:hover {
+        transform: scale(1.1);
+        box-shadow: 0 0 20px rgba(78, 205, 196, 0.5);
+      }
+      .projects {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+      }
+      .project-card {
+        padding: 30px;
+        transition: all 0.3s;
+      }
+      .project-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 10px 30px rgba(255, 107, 107, 0.3);
+      }
+      .contact {
+        flex-direction: column;
+      }
+      .contact a {
+        color: #4ecdc4;
+        text-decoration: none;
+        font-size: 1.2rem;
+      }
+      .nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        padding: 20px 50px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        z-index: 1000;
+        background: rgba(10, 10, 10, 0.8);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      .nav-brand {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #4ecdc4;
+      }
+      .nav-links {
+        display: flex;
+        list-style: none;
+      }
+      .nav-link {
+        color: #fff;
+        text-decoration: none;
+        margin: 0 20px;
+        font-weight: 500;
+        position: relative;
+        transition: color 0.3s;
+      }
+      .nav-link::after {
+        content: "";
+        position: absolute;
+        bottom: -5px;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: #4ecdc4;
+        transition: width 0.3s;
+      }
+      .nav-link:hover::after,
+      .nav-link.active::after {
+        width: 100%;
+      }
+      .nav-link.active {
+        color: #4ecdc4;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(50px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      @media (max-width: 768px) {
+        .hero h1 {
+          font-size: 2.5rem;
+        }
+        .section {
+          padding: 50px 20px;
+        }
+        .nav {
+          padding: 20px;
+        }
+        .nav-links {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="nav">
+      <div class="nav-brand">Nathan</div>
+      <ul class="nav-links">
+        <li><a href="#home" class="nav-link active">Home</a></li>
+        <li><a href="#about" class="nav-link">About</a></li>
+        <li><a href="#experience" class="nav-link">Experience</a></li>
+        <li><a href="#projects" class="nav-link">Projects</a></li>
+        <li><a href="#contact" class="nav-link">Contact</a></li>
+      </ul>
+    </nav>
+    <div id="root"></div>
 
-    <!-- ================= HERO ================= -->
-    <header class="hero">
-        <div class="hero-content">
-            <h1>Bienvenue dans mon Portfolio</h1>
-            <p>Découvrez mes projets et compétences avec un style Pokémon unique</p>
-            <p>Monvoisin Nathan</p>
-            <button id="discoverBtn">Découvrir</button>
-        </div>
-        <div class="pokeball-hero"></div>
-    </header>
+    <script type="text/babel">
+      const { useState, useEffect } = React;
 
-    <!-- ================= PORTFOLIO ================= -->
-    <main id="portfolio" class="portfolio hidden">
+      function App() {
+        useEffect(() => {
+          gsap.registerPlugin(ScrollTrigger);
+          gsap.from(".section", {
+            opacity: 0,
+            y: 50,
+            duration: 1,
+            stagger: 0.2,
+            scrollTrigger: { trigger: ".section", start: "top 80%" },
+          });
+        }, []);
 
-        <!-- À propos -->
-        <section class="card about">
-            <h2>À propos de moi</h2>
-            <p>Je suis passionné par le développement, les jeux vidéo et l’électronique. J'aime créer des projets originaux et interactifs !</p>
-        </section>
+        return (
+          <div>
+            <Hero />
+            <About />
+            <Skills />
+            <Experience />
+            <Projects />
+            <Contact />
+            <Footer />
+          </div>
+        );
+      }
 
-        <!-- Compétences -->
-        <section class="card skills">
-            <h2>Compétences</h2>
-            <ul>
-                <li>Python</li>
-                <li>C++</li>
-                <li>Html & Css</li>
-                <li>javascript</li>
-                <li>Freelance</li>
-            </ul>
-        </section>
+      function Hero() {
+        useEffect(() => {
+          // Typing Animation
+          const typed = new Typed("#typed-text", {
+            strings: [
+              "Front-End Developer",
+              "16 yo Passionate Coder",
+              "3D Web Enthusiast",
+            ],
+            typeSpeed: 50,
+            backSpeed: 30,
+            loop: true,
+          });
 
-        <!-- Projets -->
-        <section class="card projects">
-            <h2>Projets</h2>
-            <div class="project-item">
-                <h3>Mini-jeu Pokémon C++</h3>
-                <p>Un petit jeu Pokémon développé en C++.</p>
-                <a href="https://nathyger.github.io/mon-portfolio/pokemon/">jouer</a>
+          // Advanced Three.js Scene with Post-Processing
+          const scene = new THREE.Scene();
+          const camera = new THREE.PerspectiveCamera(
+            75,
+            window.innerWidth / window.innerHeight,
+            0.1,
+            1000,
+          );
+          const renderer = new THREE.WebGLRenderer({
+            canvas: document.getElementById("three-canvas"),
+            alpha: true,
+          });
+          renderer.setSize(window.innerWidth, window.innerHeight);
+          renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+          // Fog
+          scene.fog = new THREE.Fog(0x0a0a0a, 10, 50);
+
+          // Particle System with Morphing
+          const particlesGeometry = new THREE.BufferGeometry();
+          const particlesCount = 2000;
+          const posArray = new Float32Array(particlesCount * 3);
+          const originalPosArray = new Float32Array(particlesCount * 3);
+          for (let i = 0; i < particlesCount * 3; i++) {
+            const i3 = i * 3;
+            posArray[i3] = (Math.random() - 0.5) * 20;
+            posArray[i3 + 1] = (Math.random() - 0.5) * 20;
+            posArray[i3 + 2] = (Math.random() - 0.5) * 20;
+            originalPosArray[i3] = posArray[i3];
+            originalPosArray[i3 + 1] = posArray[i3 + 1];
+            originalPosArray[i3 + 2] = posArray[i3 + 2];
+          }
+          particlesGeometry.setAttribute(
+            "position",
+            new THREE.BufferAttribute(posArray, 3),
+          );
+          const particlesMaterial = new THREE.PointsMaterial({
+            color: 0x4ecdc4,
+            size: 0.03,
+            transparent: true,
+            opacity: 0.8,
+            vertexColors: false,
+          });
+          const particlesMesh = new THREE.Points(
+            particlesGeometry,
+            particlesMaterial,
+          );
+          scene.add(particlesMesh);
+
+          camera.position.set(0, 0, 8);
+
+          // Post-Processing
+          const composer = new THREE.EffectComposer(renderer);
+          const renderPass = new THREE.RenderPass(scene, camera);
+          composer.addPass(renderPass);
+
+          const bloomPass = new THREE.UnrealBloomPass(
+            new THREE.Vector2(window.innerWidth, window.innerHeight),
+            1.5,
+            0.4,
+            0.85,
+          );
+          bloomPass.threshold = 0;
+          bloomPass.strength = 0.5;
+          bloomPass.radius = 0;
+          composer.addPass(bloomPass);
+
+          // Mouse Interaction
+          let mouseX = 0;
+          let mouseY = 0;
+          const onMouseMove = (event) => {
+            mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+            mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
+          };
+          window.addEventListener("mousemove", onMouseMove);
+
+          const animate = () => {
+            requestAnimationFrame(animate);
+
+            // Particle morphing based on scroll
+            const positions = particlesGeometry.attributes.position.array;
+            for (let i = 0; i < particlesCount; i++) {
+              const i3 = i * 3;
+              const x = originalPosArray[i3];
+              const y = originalPosArray[i3 + 1];
+              const z = originalPosArray[i3 + 2];
+
+              positions[i3] = x + Math.sin(Date.now() * 0.001 + i) * 0.5;
+              positions[i3 + 1] = y + Math.cos(Date.now() * 0.001 + i) * 0.5;
+              positions[i3 + 2] = z + Math.sin(Date.now() * 0.002 + i) * 0.5;
+            }
+            particlesGeometry.attributes.position.needsUpdate = true;
+
+            particlesMesh.rotation.x += 0.001;
+            particlesMesh.rotation.y += 0.001;
+
+            // Interactive camera movement
+            camera.position.x += (mouseX * 2 - camera.position.x) * 0.05;
+            camera.position.y += (-mouseY * 2 - camera.position.y) * 0.05;
+            camera.lookAt(scene.position);
+
+            composer.render();
+          };
+          animate();
+
+          window.addEventListener("resize", () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+          });
+
+          return () => {
+            typed.destroy();
+            window.removeEventListener("mousemove", onMouseMove);
+          };
+        }, []);
+
+        const handleExplore = () => {
+          gsap.to(window, { duration: 1, scrollTo: { y: window.innerHeight } });
+        };
+
+        return (
+          <section className="hero">
+            <canvas id="three-canvas"></canvas>
+            <div className="hero-content">
+              <h1>Nathan Monvoisin</h1>
+              <p>
+                <span id="typed-text"></span>
+              </p>
+              <button
+                onClick={handleExplore}
+                style={{
+                  padding: "15px 30px",
+                  background: "linear-gradient(45deg, #ff6b6b, #4ecdc4)",
+                  border: "none",
+                  borderRadius: "25px",
+                  color: "#fff",
+                  fontSize: "1.2rem",
+                  cursor: "pointer",
+                  marginTop: "20px",
+                }}
+              >
+                Explore My Work
+              </button>
             </div>
-        </section>
+          </section>
+        );
+      }
 
-        <!-- Contact -->
-        <section class="card contact">
-            <h2>Contact</h2>
-            <p>Email : <a href="https://mail.google.com/mail/u/0/#inbox?compose=CllgCKCDBlgtGnKCxJKWZWhmwxsqsZbhnbpLxFhrtDGvNxrjsNsStwlQgkMCwdGzHrQxdrrKtVB">nathanmonvoisin15@gmail.com</a></p>
-        </section>
-    </main>
+      function About() {
+        const timeline = [
+          { year: "2022", event: "Commencé à apprendre HTML et CSS" },
+          {
+            year: "2023",
+            event: "Découverte du JavaScript et création de mes premiers projets web",
+          },
+          {
+            year: "2024",
+            event: "Construit mon première application React et exploré le développement web 3D",
+          },
+          { year: "2025", event: "Créé des portfolios interactifs et des jeux" },
+          {
+            year: "2026",
+            event: "Découverte du back-end et commencé à apprendre Node.js et les bases de données",
+          },
+        ];
 
-    <!-- ================= FOOTER ================= -->
-    <footer>
-        &copy; 2026 Mon Portfolio - Tous droits réservés
-        
-    </footer>
+        return (
+          <section id="about" className="section about glass">
+            <div style={{ maxWidth: "800px", margin: "0 auto" }}>
+              <p
+                style={{
+                  fontSize: "1.2rem",
+                  lineHeight: "1.6",
+                  marginBottom: "30px",
+                }}
+              >
+                Bonjour ! Je suis Nathan, un développeur front-end de 16 ans
+                vivant en France. J'adore créer des expériences web immersives en
+                utilisant des technologies modernes comme React, Three.js et GSAP.
+                Quand je ne code pas, je découvre les nouvelles tendances tech ou
+                je travaille sur mon prochain projet créatif. Mon but futur est de 
+                devenir software engineer dans le back-end.
+              </p>
+              <h3
+                style={{
+                  fontSize: "1.8rem",
+                  marginBottom: "20px",
+                  color: "#4ecdc4",
+                }}
+              >
+                My Journey
+              </h3>
+              <div
+                className="timeline"
+                style={{ position: "relative", paddingLeft: "30px" }}
+              >
+                {timeline.map((item, index) => (
+                  <div
+                    key={index}
+                    style={{ marginBottom: "20px", position: "relative" }}
+                  >
+                    <div
+                      style={{
+                        position: "absolute",
+                        left: "-35px",
+                        top: "5px",
+                        width: "10px",
+                        height: "10px",
+                        background: "#ff6b6b",
+                        borderRadius: "50%",
+                      }}
+                    ></div>
+                    <div
+                      style={{
+                        background: "rgba(255, 255, 255, 0.1)",
+                        padding: "15px",
+                        borderRadius: "10px",
+                        borderLeft: "3px solid #4ecdc4",
+                      }}
+                    >
+                      <strong style={{ color: "#ff6b6b" }}>{item.year}:</strong>{" "}
+                      {item.event}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        );
+      }
 
-    <!-- ================= SCRIPT ================= -->
-    <script>
-        const discoverBtn = document.getElementById("discoverBtn");
-        const portfolio = document.getElementById("portfolio");
+      function Skills() {
+        const [counters, setCounters] = useState({});
 
-        discoverBtn.addEventListener("click", () => {
-            portfolio.classList.remove("hidden");
-            portfolio.scrollIntoView({ behavior: "smooth" });
+        const skills = [
+          { name: "HTML", icon: "🌐", level: 90 },
+          { name: "CSS", icon: "🎨", level: 85 },
+          { name: "JavaScript", icon: "⚡", level: 80 },
+          { name: "Python", icon: "🐍", level: 75 },
+          { name: "React", icon: "⚛️", level: 85 },
+        ];
 
-            // Animation lente des cartes
-            const cards = document.querySelectorAll(".card");
-            cards.forEach((card, index) => {
-                setTimeout(() => card.classList.add("active"), index * 500);
-            });
-        });
+        useEffect(() => {
+          const observer = new IntersectionObserver(
+            (entries) => {
+              entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                  const skillName = entry.target.dataset.skill;
+                  const targetLevel = skills.find(
+                    (s) => s.name === skillName,
+                  ).level;
+                  animateCounter(skillName, targetLevel);
+                }
+              });
+            },
+            { threshold: 0.5 },
+          );
+
+          document
+            .querySelectorAll(".skill-item")
+            .forEach((item) => observer.observe(item));
+
+          return () => observer.disconnect();
+        }, []);
+
+        const animateCounter = (skillName, target) => {
+          let current = 0;
+          const increment = target / 100;
+          const timer = setInterval(() => {
+            current += increment;
+            if (current >= target) {
+              current = target;
+              clearInterval(timer);
+            }
+            setCounters((prev) => ({
+              ...prev,
+              [skillName]: Math.floor(current),
+            }));
+          }, 20);
+        };
+
+        return (
+          <section className="section skills glass">
+            <h2
+              style={{
+                textAlign: "center",
+                marginBottom: "50px",
+                fontSize: "2.5rem",
+              }}
+            >
+              Skills
+            </h2>
+            {skills.map((skill) => (
+              <div
+                key={skill.name}
+                className="skill-item glass"
+                data-skill={skill.name}
+                style={{ position: "relative", overflow: "hidden" }}
+              >
+                <div style={{ fontSize: "3rem", marginBottom: "10px" }}>
+                  {skill.icon}
+                </div>
+                <h3 style={{ marginBottom: "15px" }}>{skill.name}</h3>
+                <div
+                  style={{
+                    width: "100%",
+                    height: "10px",
+                    background: "rgba(255, 255, 255, 0.2)",
+                    borderRadius: "5px",
+                    overflow: "hidden",
+                  }}
+                >
+                  <div
+                    style={{
+                      width: `${counters[skill.name] || 0}%`,
+                      height: "100%",
+                      background: "linear-gradient(45deg, #ff6b6b, #4ecdc4)",
+                      borderRadius: "5px",
+                      transition: "width 0.5s ease",
+                    }}
+                  ></div>
+                </div>
+                <p
+                  style={{
+                    marginTop: "10px",
+                    fontSize: "1.2rem",
+                    color: "#4ecdc4",
+                  }}
+                >
+                  {counters[skill.name] || 0}%
+                </p>
+              </div>
+            ))}
+          </section>
+        );
+      }
+
+      function Experience() {
+        const experiences = [
+          {
+            title: "Développeur Front-End",
+            company: "Autodidacte",
+            period: "2023 - Présent",
+            desc: "Développé plusieurs projets web avec HTML, CSS, JavaScript et React. Créé des expériences 3D interactives avec Three.js.",
+          },
+          {
+            title: "Développeur de jeux",
+            company: "Projets personnels",
+            period: "2024 - Présent",
+            desc: "Développé des jeux en C++ et exploré des concepts de développement de jeux.",
+          },
+          {
+            title: "Passionné du web",
+            company: "Apprentissage continu",
+            period: "2025 - Présent",
+            desc: "Reste à jour avec les dernières technologies web et les bonnes pratiques.",
+          },
+        ];
+
+        return (
+          <section className="section experience glass">
+            <h2
+              style={{
+                textAlign: "center",
+                marginBottom: "50px",
+                fontSize: "2.5rem",
+              }}
+            >
+              Experience
+            </h2>
+            <div style={{ maxWidth: "800px", margin: "0 auto" }}>
+              {experiences.map((exp, index) => (
+                <div
+                  key={index}
+                  style={{
+                    marginBottom: "30px",
+                    padding: "20px",
+                    background: "rgba(255, 255, 255, 0.05)",
+                    borderRadius: "10px",
+                    borderLeft: "4px solid #ff6b6b",
+                  }}
+                >
+                  <h3
+                    style={{
+                      fontSize: "1.5rem",
+                      color: "#4ecdc4",
+                      marginBottom: "5px",
+                    }}
+                  >
+                    {exp.title}
+                  </h3>
+                  <p
+                    style={{
+                      fontSize: "1.1rem",
+                      color: "#ff6b6b",
+                      marginBottom: "10px",
+                    }}
+                  >
+                    {exp.company} | {exp.period}
+                  </p>
+                  <p style={{ fontSize: "1rem", lineHeight: "1.5" }}>
+                    {exp.desc}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </section>
+        );
+      }
+
+      function Projects() {
+        const projects = [
+          {
+            title: "3D Interactive portfolio",
+            desc: "mon portfolio immersive et interactif 3d",
+            link: "#",
+          },
+          {
+            title: "jeux pokedefi",
+            desc: "juste un petit jeu c++",
+            link: "https://kyse-dev.github.io/mon-portfolio/pokemon/",
+          },
+        ];
+        return (
+          <section className="section projects">
+            <h2
+              style={{
+                textAlign: "center",
+                marginBottom: "50px",
+                fontSize: "2.5rem",
+              }}
+            >
+              Projects
+            </h2>
+            {projects.map((p) => (
+              <div key={p.title} className="project-card glass">
+                <h3>{p.title}</h3>
+                <p>{p.desc}</p>
+                <a href={p.link} style={{ color: "#ff6b6b" }}>
+                  View Project
+                </a>
+              </div>
+            ))}
+          </section>
+        );
+      }
+
+      function Contact() {
+        return (
+          <section className="section contact glass">
+            <h2 style={{ fontSize: "2.5rem", marginBottom: "20px" }}>
+              CONTACT
+            </h2>
+            <p style={{ fontSize: "1.2rem" }}>
+              Email:{" "}
+              <a href="mailto:nathanmonvoisin15@gmail.com">
+                nathanmonvoisin15@gmail.com
+              </a>
+            </p>
+            <p>Let's build something amazing together!</p>
+          </section>
+        );
+      }
+
+      function Footer() {
+        return (
+          <footer
+            style={{
+              padding: "50px 20px",
+              background: "rgba(0, 0, 0, 0.5)",
+              textAlign: "center",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                gap: "30px",
+                marginBottom: "20px",
+              }}
+            >
+              <a
+                href="https://github.com"
+                style={{ color: "#fff", fontSize: "2rem" }}
+              >
+                🐙
+              </a>
+              <a
+                href="https://linkedin.com"
+                style={{ color: "#fff", fontSize: "2rem" }}
+              >
+                💼
+              </a>
+              <a
+                href="mailto:nathanmonvoisin15@gmail.com"
+                style={{ color: "#fff", fontSize: "2rem" }}
+              >
+                ✉️
+              </a>
+            </div>
+            <p>
+              &copy; 2026 Nathan Monvoisin. Built with ❤️ using React & Three.js
+            </p>
+          </footer>
+        );
+      }
+
+      ReactDOM.render(<App />, document.getElementById("root"));
     </script>
-
-</body>
+  </body>
 </html>
-
-
